@@ -1,0 +1,5 @@
+export const delivery = '/src/assets/icons/delivery.svg'
+export const heart = '/src/assets/icons/heart.svg'
+export const chat = '/src/assets/icons/chat.svg'
+export const bell = '/src/assets/icons/bell.svg'
+export const shoppingCart = '/src/assets/icons/shopping-cart.svg'
