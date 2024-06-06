@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  password         String
+  username         String     @unique
+  name             String?
+  surname          String?
+  avatar           String?
+  accountState     String
+  street           String?
+  houseNumber      String?
+  apartmentNumber  String?
+  zipCode          String?
+  city             String?
+  country          String?
+  phoneNumber      String?
+  deliveryAddress  Address[]
+  bougthProducts   Product[]  @relation("boughtByUsers")
+  soldProducts     Product[]  @relation("soldByUser")
+  reviews          Review[]
+  favoriteProducts Favorite[] @relation("UserFavorites")
+  cartItems        CartItem[] @relation("UserCartItems")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Address {
+  id              Int      @id @default(autoincrement())
+  name            String?
+  surname         String?
+  street          String?
+  houseNumber     String?
+  apartmentNumber String?
+  zipCode         String?
+  city            String?
+  country         String?
+  phoneNumber     String?
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Product {
+  id            Int        @id @default(autoincrement())
+  title         String
+  description   String?
+  categoryId    Int
+  category      Category   @relation(fields: [categoryId], references: [id])
+  parameters    String?
+  price         Int
+  newPrice      Int?
+  bougthByUsers User[]     @relation("boughtByUsers")
+  soldByUserId  Int
+  soldByUser    User       @relation("soldByUser", fields: [soldByUserId], references: [id])
+  stateId       Int
+  state         State      @relation(fields: [stateId], references: [id])
+  count         Int
+  images        String[]
+  reviews       Review[]
+  variant       String[]
+  favorites     Favorite[]
+  cartItems     CartItem[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  title    String
+  products Product[]
+}
+
+model State {
+  id       Int       @id @default(autoincrement())
+  title    String
+  products Product[]
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  reviewText String?
+  reviewMark Int
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  likes      Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation("UserFavorites", fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation("UserCartItems", fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
